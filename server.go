@@ -3,8 +3,31 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
-func PlayerServer(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "20")
+type PlayerStore interface {
+	getPlayerScore(name string) int
+}
+
+type PlayerServer struct {
+	store PlayerStore
+}
+
+func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	player := strings.TrimPrefix(r.URL.Path, "/players/")
+
+	fmt.Fprint(w, p.store.getPlayerScore(player))
+
+}
+
+func (p *PlayerServer) getPlayerScore(name string) string {
+	switch name {
+	case "Yoni":
+		return "20"
+	case "Naju":
+		return "30"
+	default:
+		return "0"
+	}
 }
